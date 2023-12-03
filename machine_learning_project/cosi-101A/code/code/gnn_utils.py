@@ -90,7 +90,10 @@ class GraphConvolution(Module):
     #Simple GCN layer: https://arxiv.org/abs/1609.02907
     def __init__(self, in_features, out_features):
         super(GraphConvolution, self).__init__()
-
+        self.in_features = in_features
+        self.out_features = out_features
+        self.weight = Parameter(torch.FloatTensor(in_features, out_features))
+        self.bias = Parameter(torch.FloatTensor(out_features))
         self.reset_parameters()
 
     def reset_parameters(self):
@@ -100,14 +103,26 @@ class GraphConvolution(Module):
             self.bias.data.uniform_(-stdv, stdv)
 
     def forward(self, input, adj):
+        support = torch.mm(input, self.weight)
+        output = torch.spmm(adj, support)
+        if self.bias is not None:
+            return output + self.bias
+        else:
+            return output
 
 
 class GCN(nn.Module):
-    def __init__(self, nfeat, nhid, nclass, dropout):
+    def __init__(self, nfeat, nclass=7, dropout=0.5, nhid=32):
         super(GCN, self).__init__()
-  
+        self.gc1 = GraphConvolution(nfeat, nhid)
+        self.gc2 = GraphConvolution(nhid, nclass)
+        self.dropout = dropout
 
     def forward(self, x, adj):
+        x = F.relu(self.gc1(x, adj))
+        x = F.dropout(x, self.dropout, training=self.training)
+        x = self.gc2(x, adj)
+        return F.log_softmax(x, dim=1)
   
 
 
