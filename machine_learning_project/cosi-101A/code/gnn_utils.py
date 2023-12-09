@@ -19,7 +19,7 @@ def encode_onehot(labels):
     return labels_onehot
 
 
-def load_data(path="../dataset/", dataset="cora"):
+def load_data(path="../datasets/datasets/", dataset="cora"):
     # Load citation network dataset
     print('Loading {} dataset...'.format(dataset))
 

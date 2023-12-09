@@ -18,7 +18,7 @@ def model_train(train_data_x, train_data_y, test_data_x, test_data_y):
 	
 	# define necessary parameters
 	net = net.to(device="cuda")
-	optimizer = optim.Adam(net.parameters(), lr=1e-2)
+	optimizer = optim.Adam(net.parameters(), lr=1e-4)
 	loss_fn = nn.CrossEntropyLoss()
 	batch_size = 5
 
@@ -35,7 +35,7 @@ def model_train(train_data_x, train_data_y, test_data_x, test_data_y):
 
 	# model train
 	net.train()
-	for epoch in range(20):
+	for epoch in range(100):
 		loss_train = 0.0
 		for i, data in enumerate(train_loader, 0):
 			# get the inputs
